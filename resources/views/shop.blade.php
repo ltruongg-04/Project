@@ -339,13 +339,13 @@
                     <div class="swiper-container background-img js-swiper-slider" data-settings='{"resizeObserver": true}'>
                   <div class="swiper-wrapper">
                     <div class="swiper-slide">
-                      <a href="{{ route('shop.product.details',['product_slug'=>$product_slug]) }}"><img loading="lazy" src="{{ asset('uploads/products') }}/{{ $product->image }}" width="330"
+                      <a href="{{ route('shop.product.details',['product_slug'=>$product->slug]) }}"><img loading="lazy" src="{{ asset('uploads/products') }}/{{ $product->image }}" width="330"
                           height="400" alt="{{ $product->name }}" class="pc__img"></a>
                     </div>
                     <div class="swiper-slide">
                         @foreach (explode(",",$product->image) as $gimg)
                             
-                        <a href="{{ route('shop.product.details',['product_slug'=>$product_slug]) }}"><img loading="lazy" src="{{ asset('uploads/products') }}/{{ $gimg }}"
+                        <a href="{{ route('shop.product.details',['product_slug'=>$product->slug]) }}"><img loading="lazy" src="{{ asset('uploads/products') }}/{{ $gimg }}"
                             width="330" height="400" alt="{{ $product->name }}" class="pc__img"></a>
                         @endforeach
                     </div>
@@ -375,7 +375,7 @@
 
               <div class="pc__info position-relative">
                 <p class="pc__category">{{$product->category->name}}</p>
-                <h6 class="pc__title"><a href="{{ route('shop.product.details',['product_slug'=>$product_slug]) }}">{{$product->name}}</a></h6>
+                <h6 class="pc__title"><a href="{{ route('shop.product.details',['product_slug'=>$product->slug]) }}">{{$product->name}}</a></h6>
                 <div class="product-card__price d-flex">
                   <span class="money price">
                     @if($product->sale_price)
@@ -407,7 +407,7 @@
                 </div>
 
                 @if(Cart::instance('wishlist')->content()->where('id',$product->id)->count()>0)
-                <form method="POST" action="{{ route('wishlist.item.remove',['rowId'=>Cart::instance('wishlist')->content()->where('id',$product->id)->first()->rowId()]) }}">
+                <form method="POST" action="{{ route('wishlist.item.remove',['rowId'=>Cart::instance('wishlist')->content()->where('id',$product->id)->first()->rowId]) }}">
                   @csrf
                   @method('DELETE')
                 <button class="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist filled-heart"

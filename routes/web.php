@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function(){
 
 Route::middleware(['auth',AuthAdmin::class])->group(function(){
     Route::get('/admin',[AdminController::class,'index'])->name('admin.index');
+    
     Route::get('/admin/brands',[AdminController::class,'brands'])->name('admin.brands');
     Route::get('/admin/brand/add',[AdminController::class,'add_brand'])->name('admin.brand.add');
     Route::post('/admin/brand/store',[AdminController::class,'brand_store'])->name('admin.brand.store');
@@ -93,4 +94,17 @@ Route::middleware(['auth',AuthAdmin::class])->group(function(){
     Route::delete('/admin/contact/{id}/delete',[AdminController::class,'contact_delete'])->name('admin.contact.delete');
     
     Route::get('/admin/search',[AdminController::class,'search'])->name('admin.search');
+});
+
+
+use Illuminate\Support\Facades\Cache;
+
+Route::get('/test-memcached', function () {
+    Cache::put('key_test', 'Hello Memcached', 600); 
+    $value = Cache::get('key_test');
+    return $value;
+});
+
+Route::get('/phpinfo', function () {
+    phpinfo();
 });

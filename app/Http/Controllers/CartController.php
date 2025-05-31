@@ -20,9 +20,9 @@ class CartController extends Controller
         $items = Cart::instance('cart')->content();
         return view('cart',compact('items'));
     }
-    public function add_to_cart()
+    public function add_to_cart(Request $request)
     {
-        Cart::instance('cart')->add($request->id,$request->name,$request->quantity->$request->price)->associate('App\Models\Product');
+        Cart::instance('cart')->add($request->id,$request->name,$request->quantity,$request->price)->associate('App\Models\Product');
         return redirect()->back();
     }
     public function increase_cart_quantity($rowId)
@@ -176,11 +176,11 @@ class CartController extends Controller
         foreach(Cart::instance('cart')->content() as $item)
         {
             $orderItem = new OrderItem();
-            $oredeItem->product_id = $item->id;
-            $oredeItem->order_id = $order->id;
-            $oredeItem->price = $item->price;
-            $oredeItem->quantity = $item->qty;
-            $orderIrem->save();
+            $orderItem->product_id = $item->id;
+            $orderItem->order_id = $order->id;
+            $orderItem->price = $item->price;
+            $orderItem->quantity = $item->qty;
+            $orderItem->save();
         }
         if($request->mode == "card")
         {
@@ -193,7 +193,7 @@ class CartController extends Controller
         elseif($request->mode == "cod"){
             $transaction = new Transaction();
             $transaction->user_id = $user_id;
-            $transaction->order_id = $order_id;
+            $transaction->order_id = $order->id;
             $transaction->mode = $request->mode;
             $transaction->status = "pending";
             $transaction->save();

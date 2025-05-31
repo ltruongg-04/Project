@@ -30,7 +30,7 @@ class AdminController extends Controller
                                     sum(if(status='ordered',1,0)) As TotalOrdered,
                                     sum(if(status='delivered',1,0)) As TotalDelivered,
                                     sum(if(status='canceled',1,0)) As TotalCanceled
-                                    From Orders
+                                    From orders
                                     ");
         
 
@@ -45,7 +45,7 @@ class AdminController extends Controller
                             sum(if(status='ordered',total,0)) As TotalOrderedAmount,
                             sum(if(status='delivered',total,0)) As TotalDeliveredAmount,
                             sum(if(status='canceled',total,0)) As TotalCanceledAmount
-                            From Orders WHERE YEAR(created_at)=YEAR(NOW()) GROUP BY YEAR(created_at), MONTH(created_at), DATE_FORMAT(created_at,'%b')
+                            From orders WHERE YEAR(created_at)=YEAR(NOW()) GROUP BY YEAR(created_at), MONTH(created_at), DATE_FORMAT(created_at,'%b')
                             Order By MONTH(created_at)) D On D.MonthNo=M.id");
         $AmountM = implode(',',collect($monthlyDatas)->pluck('TotalAmount')->toArray());              
         $OrderedAmountM = implode(',',collect($monthlyDatas)->pluck('TotalOrderedAmount')->toArray());              
@@ -188,7 +188,7 @@ class AdminController extends Controller
         return view('admin.category-edit',compact('category'));
     }
 
-    public function category_update()
+    public function category_update(Request $request)
     {
         $request->validate([
             'name' =>'required',
@@ -287,7 +287,7 @@ class AdminController extends Controller
         if($request->hasFile('images'))
         {
             $allowedfileExtion =['jpg','png','jpeg'];
-            $file = $request->file('images');
+            $files = $request->file('images');
             foreach($files as $file)
             {
                 $gextension = $file->getClientOriginalExtension();
@@ -304,7 +304,7 @@ class AdminController extends Controller
         }
         $product->images = $gallery_images;
         $product->save();
-        return redirect()->route('admin.products')->with('status','Prodcut has been added successfully!');
+        return redirect()->route('admin.products')->with('status','Product has been added successfully!');
     }
 
     public function GenerateProductThumbnailImage($image,$imageName)
@@ -462,7 +462,7 @@ class AdminController extends Controller
             'code'=>'required',
             'type'=>'required',
             'value'=>'required|numeric',
-            'cart_value'=>'required|numreric',
+            'cart_value'=>'required|numeric',
             'expiry_date'=>'required|date'
         ]);
 

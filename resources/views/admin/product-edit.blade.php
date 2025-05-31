@@ -148,7 +148,7 @@
                                             <div class="body-title mb-10">Upload Gallery Images</div>
                                             <div class="upload-image mb-16">
                                                 @if ($product->images)
-                                                    @foreach (ecxplode(',',$product->images) as $img)
+                                                    @foreach (explode(',',$product->images) as $img)
                                                         
                                                     <div class="item gitems">
                                                         <img src="{{ asset('uploads/products') }}/{{ trim($img) }}" alt="">
@@ -210,7 +210,7 @@
                                                 <div class="body-title mb-10">Quantity <span class="tf-color-1">*</span>
                                                 </div>
                                                 <input class="mb-10" type="text" placeholder="Enter quantity"
-                                                    name="quantity" tabindex="0" value="{{$product->quantity)}}" aria-required="true"
+                                                    name="quantity" tabindex="0" value="{{$product->quantity}}" aria-required="true"
                                                     required="">
                                             </fieldset>
                                             @error('quantity')

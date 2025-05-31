@@ -428,7 +428,7 @@
                 
             <div class="swiper-slide product-card">
               <div class="pc__img-wrapper">
-                <a href="{{ route('shop.product.details',['product_slug'=>$rproduct_slug]) }}">
+                <a href="{{ route('shop.product.details',['product_slug'=>$rproduct->slug]) }}">
                   <img loading="lazy" src="{{ asset('uploads/products') }}/{{ $rproduct->image }}" width="330" height="400"
                     alt="{{ $rproduct->name }}" class="pc__img">
                     @foreach (explode(",",$rproduct->image) as $gimg)
@@ -452,7 +452,7 @@
 
               <div class="pc__info position-relative">
                 <p class="pc__category">{{$product->category->name}}</p>
-                <h6 class="pc__title"><a href="{{ route('shop.product.details',['product_slug'=>$product_slug]) }}">{{$rproduct->name}}</a></h6>
+                <h6 class="pc__title"><a href="{{ route('shop.product.details',['product_slug'=>$product->slug]) }}">{{$rproduct->name}}</a></h6>
                 <div class="product-card__price d-flex">
                   <span class="money price">
                     @if($product->sale_price)

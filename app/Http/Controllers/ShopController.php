@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Brand;
+use App\Models\Category;
 
 class ShopController extends Controller
 {
@@ -53,12 +54,12 @@ class ShopController extends Controller
                 ->orWhereBetween('sale_price',[$min_price,$max_price]);
             })
             ->orderBy($o_column,$o_order)->paginate($size);
-        return view('shop',compact('products','size','order','brands','f_brands','f_categories','min_price','max_price'));
+        return view('shop',compact('products','categories','size','order','brands','f_brands','f_categories','min_price','max_price'));
     }
     public function product_details($product_slug)
     {
         $product = Product::where('slug',$product_slug)->first();
-        $rproduct = Product::where('slug','<>',$product_slug)->get()->take(8);
+        $rproducts = Product::where('slug','<>',$product_slug)->get()->take(8);
         return view('details',compact('product','rproducts'));
     }
 }

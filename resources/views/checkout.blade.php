@@ -158,7 +158,7 @@
                                     </tr>
                                     <tr>
                                         <th>Discount {{Session::get('coupon')['code']}}</th>
-                                        <td class="text-right">${{Session::get('discouts')['discount']}}</td>
+                                        <td class="text-right">${{Session::get('discounts')['discount']}}</td>
                                     </tr>
                                     <tr>
                                         <th>Subtotal After Discount</th>
@@ -170,7 +170,7 @@
                                     </tr>
                                     <tr>
                                         <th>VAT</th>
-                                        <td class="text-right">${{Session::ger('discounts')['tax']}}</td>
+                                        <td class="text-right">${{Session::get('discounts')['tax']}}</td>
                                     </tr>
                                     <tr>
                                         <th>Total</th>

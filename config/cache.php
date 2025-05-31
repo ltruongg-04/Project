@@ -60,16 +60,27 @@ return [
                 env('MEMCACHED_PASSWORD'),
             ],
             'options' => [
-                // Memcached::OPT_CONNECT_TIMEOUT => 2000,
+                // các tùy chọn tùy chỉnh (nếu cần)
             ],
             'servers' => [
                 [
-                    'host' => env('MEMCACHED_HOST', '127.0.0.1'),
-                    'port' => env('MEMCACHED_PORT', 11211),
+                    'host' => env('MEMCACHED_SERVER_1', '127.0.0.1'),
+                    'port' => 11211,
+                    'weight' => 100,
+                ],
+                [
+                    'host' => env('MEMCACHED_SERVER_2', '127.0.0.2'),
+                    'port' => 11211,
+                    'weight' => 100,
+                ],
+                [
+                    'host' => env('MEMCACHED_SERVER_3', '127.0.0.3'),
+                    'port' => 11211,
                     'weight' => 100,
                 ],
             ],
         ],
+
 
         'redis' => [
             'driver' => 'redis',
