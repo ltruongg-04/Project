@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => env('CACHE_STORE', 'database','memcached'),
 
     /*
     |--------------------------------------------------------------------------
@@ -65,17 +65,7 @@ return [
             'servers' => [
                 [
                     'host' => env('MEMCACHED_SERVER_1', '127.0.0.1'),
-                    'port' => 11211,
-                    'weight' => 100,
-                ],
-                [
-                    'host' => env('MEMCACHED_SERVER_2', '127.0.0.2'),
-                    'port' => 11211,
-                    'weight' => 100,
-                ],
-                [
-                    'host' => env('MEMCACHED_SERVER_3', '127.0.0.3'),
-                    'port' => 11211,
+                    'port' => env('MEMCACHED_PORT', 11211),
                     'weight' => 100,
                 ],
             ],

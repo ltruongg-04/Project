@@ -3,63 +3,92 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Category;
+use Illuminate\Support\Facades\Log;
+
 
 class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $size = $request->query('size') ? $request->query('size') : 12;
-        $o_column ="";
-        $o_order ="";
-        $order = $request->query('order') ? $request->query('order') : -1;
-        $f_brands = $request->query('brands');
-        $f_categories = $request->query('categories');
-        $min_price = $request->query('min') ? $request->query('min') :1;
-        $max_price = $request->query('max') ? $request->query('max') :500;
-        switch($order)
-        {
-            case 1:
-                $o_column="created_at";
-                $o_order="DESC";
-                break;
-            case 2:
-                $o_column="created_at";
-                $o_order="ASC";
-                break;
-            case 3:
-                $o_column="sale_price";
-                $o_order="ASC";
-                break;
-            case 4:
-                $o_column="sale_price";
-                $o_order="DESC";
-                break;
-            default:
-                $o_column="id";
-                $o_order="DESC";
-        }
-        $brands = Brand::orderBy('name','ASC')->get();
-        $categories = Category::orderBy('name','ASC')->get();
-        $products = Product::where(function($query) use($f_brands){
-            $query->whereIn('brand_id',explode(',',$f_brands))->orWhereRaw("'".$f_brands."'=''");
-        })
-            ->where(function($query) use($f_categories){
-            $query->whereIn('category_id',explode(',',$f_categories))->orWhereRaw("'".$f_categories."'=''");
-        })
-            ->where(function($query) use($min_price,$max_price){
-                $query->whereBetween('regular_price',[$min_price,$max_price])
-                ->orWhereBetween('sale_price',[$min_price,$max_price]);
-            })
-            ->orderBy($o_column,$o_order)->paginate($size);
-        return view('shop',compact('products','categories','size','order','brands','f_brands','f_categories','min_price','max_price'));
+        $size = $request->query('size', 12);
+        $order = $request->query('order', -1);
+        $f_brands = $request->query('brands', '');
+        $f_categories = $request->query('categories', '');
+        $min_price = $request->query('min', 1);
+        $max_price = $request->query('max', 500);
+
+        // Thiết lập cột và thứ tự sắp xếp
+        $order_options = [
+            1 => ['created_at', 'DESC'],
+            2 => ['created_at', 'ASC'],
+            3 => ['sale_price', 'ASC'],
+            4 => ['sale_price', 'DESC'],
+            -1 => ['id', 'DESC']
+        ];
+        [$o_column, $o_order] = $order_options[$order] ?? ['id', 'DESC'];
+
+        // Cache brands và categories
+        $brands = Cache::remember('shop_brands', 60, function () {
+            dump('Cache miss - truy vấn lấy dữ liệu brands từ database.');
+            return Brand::orderBy('name', 'ASC')->get();
+        });
+
+        $categories = Cache::remember('shop_categories', 3600, function () {
+            return Category::orderBy('name', 'ASC')->get();
+        });
+
+        // Tạo cache key duy nhất dựa trên filter
+        $cacheKey = 'products_' . md5(json_encode([
+            'brands' => $f_brands,
+            'categories' => $f_categories,
+            'min' => $min_price,
+            'max' => $max_price,
+            'order' => $order,
+            'size' => $size,
+            'page' => $request->query('page', 1)
+        ]));
+
+        $products = Cache::remember($cacheKey, 300, function () use (
+            $f_brands, $f_categories, $min_price, $max_price, $o_column, $o_order, $size
+        ) {
+            return Product::where(function ($query) use ($f_brands) {
+                    $query->whereIn('brand_id', explode(',', $f_brands))
+                          ->orWhereRaw("'" . $f_brands . "'=''");
+                })
+                ->where(function ($query) use ($f_categories) {
+                    $query->whereIn('category_id', explode(',', $f_categories))
+                          ->orWhereRaw("'" . $f_categories . "'=''");
+                })
+                ->where(function ($query) use ($min_price, $max_price) {
+                    $query->whereBetween('regular_price', [$min_price, $max_price])
+                          ->orWhereBetween('sale_price', [$min_price, $max_price]);
+                })
+                ->orderBy($o_column, $o_order)
+                ->paginate($size);
+        });
+
+        return view('shop', compact(
+            'products', 'categories', 'size', 'order',
+            'brands', 'f_brands', 'f_categories', 'min_price', 'max_price'
+        ));
     }
+
     public function product_details($product_slug)
     {
-        $product = Product::where('slug',$product_slug)->first();
-        $rproducts = Product::where('slug','<>',$product_slug)->get()->take(8);
-        return view('details',compact('product','rproducts'));
+        // Cache chi tiết sản phẩm
+        $product = Cache::remember("product_{$product_slug}", 3600, function () use ($product_slug) {
+            return Product::where('slug', $product_slug)->first();
+        });
+
+        // Cache sản phẩm liên quan
+        $rproducts = Cache::remember("related_{$product_slug}", 3600, function () use ($product_slug) {
+            return Product::where('slug', '<>', $product_slug)->take(8)->get();
+        });
+
+        return view('details', compact('product', 'rproducts'));
     }
 }
