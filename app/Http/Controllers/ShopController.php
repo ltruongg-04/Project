@@ -33,7 +33,6 @@ class ShopController extends Controller
 
         // Cache brands và categories
         $brands = Cache::remember('shop_brands', 60, function () {
-            dump('Cache miss - truy vấn lấy dữ liệu brands từ database.');
             return Brand::orderBy('name', 'ASC')->get();
         });
 

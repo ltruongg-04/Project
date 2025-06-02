@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database','memcached'),
+    'default' => env('CACHE_STORE','memcached'),
 
     /*
     |--------------------------------------------------------------------------
@@ -60,12 +60,27 @@ return [
                 env('MEMCACHED_PASSWORD'),
             ],
             'options' => [
-                // các tùy chọn tùy chỉnh (nếu cần)
+                // Thời gian timeout kết nối 2 giây
+                \Memcached::OPT_CONNECT_TIMEOUT => 2000,
+                // Thời gian retry node bị lỗi
+                \Memcached::OPT_RETRY_TIMEOUT => 2,
+                // Sử dụng consistent hashing để phân phối key đều hơn
+                \Memcached::OPT_DISTRIBUTION => \Memcached::DISTRIBUTION_CONSISTENT,
+                // Tương thích libketama (hashing algorithm)
+                \Memcached::OPT_LIBKETAMA_COMPATIBLE => true,
+                // Xóa các node bị lỗi khỏi pool để tránh request đến node chết
+                \Memcached::OPT_REMOVE_FAILED_SERVERS => true,
+
             ],
             'servers' => [
                 [
-                    'host' => env('MEMCACHED_SERVER_1', '127.0.0.1'),
-                    'port' => env('MEMCACHED_PORT', 11211),
+                    'host' => env('MEMCACHED_SERVER_1', '192.168.1.100'),
+                    'port' => env('MEMCACHED_PORT_1', 11211),
+                    'weight' => 100,
+                ],
+                [
+                    'host' => env('MEMCACHED_SERVER_2', '192.168.1.101'),
+                    'port' => env('MEMCACHED_PORT_2', 11211),
                     'weight' => 100,
                 ],
             ],

@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Cache;
+
 
 class AdminController extends Controller
 {
